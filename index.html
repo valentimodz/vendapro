@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VendaPro – Gestão de Vendas</title>
+  <meta name="description" content="Sistema de registro de serviços e produtos com relatório mensal em PDF." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    </div>
+    <span class="brand-name">VendaPro</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="nav-item active" data-page="dashboard" id="nav-dashboard">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Dashboard</span>
+    </button>
+    <button class="nav-item" data-page="nova-venda" id="nav-nova-venda">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <span>Nova Venda</span>
+    </button>
+    <button class="nav-item" data-page="catalogo" id="nav-catalogo">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span>Catálogo</span>
+    </button>
+    <button class="nav-item" data-page="historico" id="nav-historico">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Histórico</span>
+    </button>
+    <button class="nav-item" data-page="relatorio" id="nav-relatorio">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <span>Relatório PDF</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-month-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span id="current-month-label">Abril 2026</span>
+    </div>
+  </div>
+</aside>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <button class="menu-toggle" id="menu-toggle" aria-label="Menu">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <h1 class="topbar-title" id="topbar-title">Dashboard</h1>
+  <div class="topbar-actions">
+    <button class="btn-accent" id="btn-nova-venda-top">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nova Venda
+    </button>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="main-content" id="main-content">
+
+  <!-- ====== DASHBOARD ====== -->
+  <section class="page active" id="page-dashboard">
+    <div class="section-header">
+      <div>
+        <h2>Visão Geral</h2>
+        <p class="section-sub">Resumo do mês atual</p>
+      </div>
+      <div class="month-filter">
+        <label for="dash-month-select">Mês:</label>
+        <select id="dash-month-select"></select>
+      </div>
+    </div>
+
+    <div class="kpi-grid" id="kpi-grid">
+      <div class="kpi-card" id="kpi-faturamento">
+        <div class="kpi-icon kpi-green">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div>
+          <span class="kpi-label">Faturamento do Mês</span>
+          <span class="kpi-value" id="kpi-faturamento-val">R$ 0,00</span>
+        </div>
+      </div>
+      <div class="kpi-card" id="kpi-vendas">
+        <div class="kpi-icon kpi-blue">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        </div>
+        <div>
+          <span class="kpi-label">Total de Vendas</span>
+          <span class="kpi-value" id="kpi-vendas-val">0</span>
+        </div>
+      </div>
+      <div class="kpi-card" id="kpi-ticket">
+        <div class="kpi-icon kpi-purple">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div>
+          <span class="kpi-label">Ticket Médio</span>
+          <span class="kpi-value" id="kpi-ticket-val">R$ 0,00</span>
+        </div>
+      </div>
+      <div class="kpi-card" id="kpi-itens">
+        <div class="kpi-icon kpi-orange">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        </div>
+        <div>
+          <span class="kpi-label">Itens Vendidos</span>
+          <span class="kpi-value" id="kpi-itens-val">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Faturamento Diário</h3>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chart-diario"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Top 5 Mais Vendidos</h3>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chart-top5"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Vendas Recentes</h3>
+      </div>
+      <div id="recent-sales-list" class="recent-list">
+        <div class="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <p>Nenhuma venda registrada ainda.</p>
+          <button class="btn-accent" onclick="goToPage('nova-venda')">Registrar Primeira Venda</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== NOVA VENDA ====== -->
+  <section class="page" id="page-nova-venda">
+    <div class="section-header">
+      <div>
+        <h2>Nova Venda</h2>
+        <p class="section-sub">Registre um serviço ou produto</p>
+      </div>
+    </div>
+
+    <div class="nova-venda-grid">
+      <!-- Formulário -->
+      <div class="card form-card">
+        <div class="card-header"><h3>Dados da Venda</h3></div>
+        <form id="form-venda" autocomplete="off">
+          <div class="form-group">
+            <label for="venda-data">Data</label>
+            <input type="date" id="venda-data" required />
+          </div>
+          <div class="form-group">
+            <label for="venda-cliente">Cliente (opcional)</label>
+            <input type="text" id="venda-cliente" placeholder="Nome do cliente..." />
+          </div>
+          <div class="form-group">
+            <label>Itens da Venda</label>
+            <div class="item-search-wrapper">
+              <input type="text" id="item-search" placeholder="Buscar produto ou serviço..." autocomplete="off" />
+              <div class="item-suggestions" id="item-suggestions"></div>
+            </div>
+          </div>
+
+          <div class="itens-list" id="itens-venda-list">
+            <div class="itens-empty">Nenhum item adicionado</div>
+          </div>
+
+          <div class="venda-total-row">
+            <span>Total da Venda</span>
+            <span class="total-value" id="venda-total-display">R$ 0,00</span>
+          </div>
+
+          <div class="form-group">
+            <label for="venda-pagamento">Forma de Pagamento</label>
+            <select id="venda-pagamento">
+              <option value="dinheiro">Dinheiro</option>
+              <option value="pix">PIX</option>
+              <option value="debito">Cartão de Débito</option>
+              <option value="credito">Cartão de Crédito</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="venda-obs">Observações (opcional)</label>
+            <textarea id="venda-obs" rows="2" placeholder="Detalhes adicionais..."></textarea>
+          </div>
+
+          <button type="submit" class="btn-accent btn-block" id="btn-salvar-venda">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Salvar Venda
+          </button>
+        </form>
+      </div>
+
+      <!-- Resumo rápido -->
+      <div class="side-panel">
+        <div class="card">
+          <div class="card-header"><h3>Resumo do Dia</h3></div>
+          <div id="resumo-dia-content">
+            <div class="resumo-row">
+              <span>Vendas hoje</span><strong id="resumo-dia-vendas">0</strong>
+            </div>
+            <div class="resumo-row">
+              <span>Faturado hoje</span><strong id="resumo-dia-fat">R$ 0,00</strong>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Atalho Rápido</h3></div>
+          <p class="card-hint">Use os itens do catálogo para agilizar o registro.</p>
+          <div id="atalho-cats" class="atalho-grid"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== CATÁLOGO ====== -->
+  <section class="page" id="page-catalogo">
+    <div class="section-header">
+      <div>
+        <h2>Catálogo</h2>
+        <p class="section-sub">Gerencie seus produtos e serviços</p>
+      </div>
+      <button class="btn-accent" id="btn-novo-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Novo Item
+      </button>
+    </div>
+
+    <div class="catalogo-filters">
+      <button class="filter-btn active" data-filter="todos" id="filter-todos">Todos</button>
+      <button class="filter-btn" data-filter="produto" id="filter-produto">Produtos</button>
+      <button class="filter-btn" data-filter="servico" id="filter-servico">Serviços</button>
+      <input type="text" id="catalogo-search" placeholder="Buscar..." class="filter-search" />
+    </div>
+
+    <div class="catalogo-grid" id="catalogo-grid">
+      <div class="empty-state full-width">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <p>Catálogo vazio. Adicione produtos e serviços.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== HISTÓRICO ====== -->
+  <section class="page" id="page-historico">
+    <div class="section-header">
+      <div>
+        <h2>Histórico de Vendas</h2>
+        <p class="section-sub">Todas as vendas registradas</p>
+      </div>
+      <div class="hist-filters">
+        <select id="hist-month-select"></select>
+      </div>
+    </div>
+
+    <div class="card">
+      <table class="sales-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Cliente</th>
+            <th>Itens</th>
+            <th>Pagamento</th>
+            <th>Total</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="historico-tbody">
+          <tr><td colspan="6" class="table-empty">Nenhuma venda encontrada.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ====== RELATÓRIO ====== -->
+  <section class="page" id="page-relatorio">
+    <div class="section-header">
+      <div>
+        <h2>Relatório Mensal</h2>
+        <p class="section-sub">Gere e exporte o relatório em PDF</p>
+      </div>
+    </div>
+
+    <div class="relatorio-controls card">
+      <div class="relatorio-filters">
+        <div class="form-group">
+          <label for="rel-month-select">Selecione o Mês</label>
+          <select id="rel-month-select"></select>
+        </div>
+        <div class="form-group">
+          <label for="rel-empresa">Nome da Empresa / Autônomo</label>
+          <input type="text" id="rel-empresa" placeholder="Sua empresa ou nome..." />
+        </div>
+      </div>
+      <div class="relatorio-actions">
+        <button class="btn-accent btn-large" id="btn-gerar-pdf">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+          Gerar & Baixar PDF
+        </button>
+        <button class="btn-outline" id="btn-preview-rel">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Pré-visualizar
+        </button>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="relatorio-preview" id="relatorio-preview" style="display:none;">
+      <div class="preview-header">
+        <h3>Pré-visualização do Relatório</h3>
+        <button class="btn-close" id="btn-close-preview">&times;</button>
+      </div>
+      <div class="preview-body" id="preview-body"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- MODAL: Novo/Editar Item Catálogo -->
+<div class="modal-overlay" id="modal-catalogo" style="display:none;">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-catalogo-title">Novo Item</h3>
+      <button class="btn-close" id="btn-close-modal-catalogo">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="form-catalogo" autocomplete="off">
+        <input type="hidden" id="cat-id" />
+        <div class="form-group">
+          <label for="cat-tipo">Tipo</label>
+          <select id="cat-tipo">
+            <option value="produto">Produto</option>
+            <option value="servico">Serviço</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="cat-nome">Nome *</label>
+          <input type="text" id="cat-nome" required placeholder="Ex: Impressão A4, Design Logo..." />
+        </div>
+        <div class="form-group">
+          <label for="cat-descricao">Descrição</label>
+          <input type="text" id="cat-descricao" placeholder="Descrição breve..." />
+        </div>
+        <div class="form-group">
+          <label for="cat-preco">Preço Padrão (R$) *</label>
+          <input type="number" id="cat-preco" min="0" step="0.01" required placeholder="0,00" />
+        </div>
+        <div class="form-group">
+          <label for="cat-unidade">Unidade</label>
+          <input type="text" id="cat-unidade" placeholder="Ex: unid, hora, página..." value="unid" />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-outline" id="btn-cancel-catalogo">Cancelar</button>
+          <button type="submit" class="btn-accent">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
