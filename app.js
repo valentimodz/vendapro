@@ -1,5 +1,5 @@
 /* =============================================
-   VendaPro – app.js
+   Gestão Cyber Gráfika – app.js
    Firebase Auth + Firestore Edition
    ============================================= */
 
@@ -636,7 +636,7 @@ function refreshRelatorio() {
 
 document.getElementById('btn-preview-rel').addEventListener('click', () => {
   const month   = document.getElementById('rel-month-select').value;
-  const empresa = document.getElementById('rel-empresa').value.trim() || 'VendaPro';
+  const empresa = document.getElementById('rel-empresa').value.trim() || 'Gestão Cyber Gráfika';
   document.getElementById('preview-body').innerHTML = buildReportHTML(month, empresa);
   document.getElementById('relatorio-preview').style.display = 'block';
   document.getElementById('relatorio-preview').scrollIntoView({ behavior: 'smooth' });
@@ -648,7 +648,7 @@ document.getElementById('btn-close-preview').addEventListener('click', () => {
 
 document.getElementById('btn-gerar-pdf').addEventListener('click', async () => {
   const month   = document.getElementById('rel-month-select').value;
-  const empresa = document.getElementById('rel-empresa').value.trim() || 'VendaPro';
+  const empresa = document.getElementById('rel-empresa').value.trim() || 'Gestão Cyber Gráfika';
   await generatePDF(month, empresa);
 });
 
@@ -736,7 +736,7 @@ function buildReportHTML(month, empresa) {
       <tbody>${salesRows || '<tr><td colspan="5" style="color:#94a3b8">Sem vendas.</td></tr>'}</tbody></table>
     </div>
     <div class="prev-footer">
-      <span>VendaPro · Sistema de Gestão de Vendas</span>
+      <span>Gestão Cyber Gráfika · Sistema de Gestão de Vendas</span>
       <span>Gerado em ${dateStr}</span>
     </div>
   </div>`;
@@ -870,7 +870,7 @@ async function generatePDF(month, empresa) {
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       doc.setFontSize(7.5); doc.setTextColor(148,163,184); doc.setFont('helvetica','normal');
-      doc.text('VendaPro · Sistema de Gestão de Vendas', margin, 290);
+      doc.text('Gestão Cyber Gráfika · Sistema de Gestão de Vendas', margin, 290);
       doc.text(`Página ${i}/${pageCount}`, pageW - margin, 290, { align:'right' });
     }
 

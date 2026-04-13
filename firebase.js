@@ -1,5 +1,5 @@
 // =============================================
-//  VendaPro – Configuração Firebase
+//  Gestão Cyber Gráfika – Configuração Firebase
 //  Preencha com as credenciais do seu projeto
 //  firebase.google.com → Configurações do projeto
 // =============================================
