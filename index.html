@@ -110,6 +110,11 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         <span>Relatório PDF</span>
       </button>
+
+      <button class="nav-item" data-page="perdas" id="nav-perdas">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 21 1.9-1.9A10.5 10.5 0 1 1 22 10.5c0 .3 0 .6-.1.9l-2 2"/><path d="M14 3.1V5"/><path d="M9 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/><path d="M17 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/><path d="M7 16.5c.5-1 4-1 4-1s3.5 0 4 1"/></svg>
+        <span>Controle de Perdas</span>
+      </button>
     </nav>
 
     <div class="sidebar-footer">
@@ -193,6 +198,24 @@
             <span class="kpi-value" id="kpi-itens-val">0</span>
           </div>
         </div>
+        <div class="kpi-card kpi-net-profit">
+          <div class="kpi-icon kpi-cyan">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/><path d="m16 9 3 3-3 3"/></svg>
+          </div>
+          <div>
+            <span class="kpi-label">Lucro Líquido Real</span>
+            <span class="kpi-value" id="kpi-lucro-val">R$ 0,00</span>
+          </div>
+        </div>
+        <div class="kpi-card kpi-loss-waste">
+          <div class="kpi-icon kpi-red" style="background: rgba(239, 68, 68, 0.12); color: #ef4444;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 21 1.9-1.9A10.5 10.5 0 1 1 22 10.5c0 .3 0 .6-.1.9l-2 2"/><path d="M14 3.1V5"/><path d="M9 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/><path d="M17 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/><path d="M7 16.5c.5-1 4-1 4-1s3.5 0 4 1"/></svg>
+          </div>
+          <div>
+            <span class="kpi-label" style="color: var(--text-secondary);">Perda do Mês</span>
+            <span class="kpi-value" id="kpi-perda-val" style="color: #ef4444;">R$ 0,00</span>
+          </div>
+        </div>
       </div>
 
       <div class="charts-grid">
@@ -231,9 +254,22 @@
               <label for="venda-data">Data</label>
               <input type="date" id="venda-data" required />
             </div>
-            <div class="form-group">
-              <label for="venda-cliente">Cliente (opcional)</label>
-              <input type="text" id="venda-cliente" placeholder="Nome do cliente..." />
+            <div class="form-row">
+              <div class="form-group">
+                <label for="venda-cliente" style="display:flex; justify-content:space-between; align-items:center;">
+                  <span>Nome do Cliente *</span>
+                  <a href="#" id="btn-novo-cliente-link" style="font-size:0.8rem; color:var(--accent); text-decoration:none; font-weight:600;">+ Cadastrar</a>
+                </label>
+                <div class="item-search-wrapper">
+                  <input type="text" id="venda-cliente" required placeholder="Buscar ou digitar nome..." autocomplete="off" />
+                  <div class="item-suggestions" id="cliente-suggestions"></div>
+                </div>
+                <input type="hidden" id="venda-cliente-id" />
+              </div>
+              <div class="form-group">
+                <label for="venda-telefone">Telefone / WhatsApp *</label>
+                <input type="text" id="venda-telefone" required placeholder="(XX) 00000-0000" />
+              </div>
             </div>
             <div class="form-group">
               <label>Itens da Venda</label>
@@ -247,20 +283,35 @@
               <div class="itens-empty">Nenhum item adicionado</div>
             </div>
 
+            <div class="form-group" style="margin-top: 1rem; margin-bottom: 0.5rem;">
+              <label for="venda-desconto">Desconto (R$)</label>
+              <input type="number" id="venda-desconto" step="0.01" min="0" placeholder="0,00" style="text-align: right; color: var(--accent); font-weight: 600;" />
+            </div>
+
             <div class="venda-total-row">
               <span>Total da Venda</span>
               <span class="total-value" id="venda-total-display">R$ 0,00</span>
             </div>
 
-            <div class="form-group">
-              <label for="venda-pagamento">Forma de Pagamento</label>
-              <select id="venda-pagamento">
-                <option value="dinheiro">Dinheiro</option>
-                <option value="pix">PIX</option>
-                <option value="debito">Cartão de Débito</option>
-                <option value="credito">Cartão de Crédito</option>
-                <option value="outro">Outro</option>
-              </select>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="venda-pagamento">Forma de Pagamento</label>
+                <select id="venda-pagamento">
+                  <option value="dinheiro">Dinheiro</option>
+                  <option value="pix">PIX</option>
+                  <option value="debito">Cartão de Débito</option>
+                  <option value="credito">Cartão de Crédito</option>
+                  <option value="outro">Outro</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="venda-status-pagamento">Status do Pagamento</label>
+                <select id="venda-status-pagamento">
+                  <option value="pago">Confirmado (Pago)</option>
+                  <option value="pendente">Pendente</option>
+                  <option value="agendado">Agendado (45 dias)</option>
+                </select>
+              </div>
             </div>
 
             <div class="form-group">
@@ -384,6 +435,54 @@
       </div>
     </section>
 
+
+
+    <!-- ====== CONTROLE DE PERDAS ====== -->
+    <section class="page" id="page-perdas">
+      <div class="section-header">
+        <div>
+          <h2>Controle de Perdas</h2>
+          <p class="section-sub">Registre desperdícios de materiais e insumos</p>
+        </div>
+      </div>
+      <div class="loss-grid">
+        <div class="card form-card">
+          <div class="card-header"><h3>Novo Registro de Perda</h3></div>
+          <form id="form-perda">
+            <div class="form-group">
+              <label for="perda-data">Data</label>
+              <input type="date" id="perda-data" required />
+            </div>
+            <div class="form-group">
+              <label for="perda-insumo">Item do Insumo</label>
+              <input type="text" id="perda-insumo" required placeholder="Ex: Papel Fotográfico A4..." />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="perda-qty">Quantidade</label>
+                <input type="number" id="perda-qty" required step="0.01" />
+              </div>
+              <div class="form-group">
+                <label for="perda-custo">Custo Estimado (R$)</label>
+                <input type="number" id="perda-custo" required step="0.01" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="perda-motivo">Motivo</label>
+              <textarea id="perda-motivo" rows="2" placeholder="Ex: Erro de impressão, papel amassado..."></textarea>
+            </div>
+            <button type="submit" class="btn-accent btn-block">Salvar Registro</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Histórico de Desperdício</h3></div>
+          <div class="loss-list" id="loss-history">
+            <div class="table-empty">Sem registros de perda.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 </div><!-- /#app -->
 
@@ -413,8 +512,12 @@
           <input type="text" id="cat-descricao" placeholder="Descrição breve..." />
         </div>
         <div class="form-group">
-          <label for="cat-preco">Preço Padrão (R$) *</label>
+          <label for="cat-preco">Preço de Venda (R$) *</label>
           <input type="number" id="cat-preco" min="0" step="0.01" required placeholder="0,00" />
+        </div>
+        <div class="form-group">
+          <label for="cat-custo">Custo de Produção (R$) *</label>
+          <input type="number" id="cat-custo" min="0" step="0.01" required placeholder="0,00" />
         </div>
         <div class="form-group">
           <label for="cat-unidade">Unidade</label>
@@ -429,10 +532,57 @@
   </div>
 </div>
 
+<!-- MODAL: Novo Cliente -->
+<div class="modal-overlay" id="modal-cliente" style="display:none;">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-cliente-title">Novo Cliente</h3>
+      <button class="btn-close" id="btn-close-modal-cliente">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="form-cliente" autocomplete="off">
+        <div class="form-group">
+          <label>Tipo de Pessoa</label>
+          <div style="display:flex; gap:16px;">
+            <label style="cursor:pointer;"><input type="radio" name="cli-tipo" value="PF" checked /> Pessoa Física</label>
+            <label style="cursor:pointer;"><input type="radio" name="cli-tipo" value="PJ" /> Pessoa Jurídica</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="cli-nome">Nome / Razão Social *</label>
+          <input type="text" id="cli-nome" required placeholder="Nome do cliente" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label id="label-cli-doc" for="cli-doc">CPF</label>
+            <input type="text" id="cli-doc" placeholder="000.000.000-00" />
+          </div>
+          <div class="form-group">
+            <label for="cli-telefone">Telefone / WhatsApp</label>
+            <input type="text" id="cli-telefone" placeholder="(XX) 00000-0000" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="cli-email">E-mail</label>
+          <input type="email" id="cli-email" placeholder="cliente@email.com" />
+        </div>
+        <div class="form-group">
+          <label for="cli-endereco">Endereço</label>
+          <input type="text" id="cli-endereco" placeholder="Rua, Número, Bairro, Cidade..." />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-outline" id="btn-cancel-cliente">Cancelar</button>
+          <button type="submit" class="btn-accent" id="btn-salvar-cli">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- CDN SCRIPTS (ordem importa) -->
+<!-- CDN SCRIPTS (Seguro e Confiável) -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <!-- Firebase SDK (compat) -->
@@ -441,4 +591,5 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="app.js"></script>
 </body>
+
 </html>

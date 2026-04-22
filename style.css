@@ -27,6 +27,8 @@
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #475569;
+  --cyan: #06b6d4;
+  --cyan-bg: rgba(6,182,212,0.12);
 
   --sidebar-w: 240px;
   --topbar-h: 64px;
@@ -39,6 +41,8 @@
   --font-head: 'Outfit', sans-serif;
 
   --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  --purple-neon: #bf00ff;
+  --purple-glow: rgba(191, 0, 255, 0.25);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -314,6 +318,7 @@ body {
 .kpi-blue  { background: var(--blue-bg);  color: var(--blue);  }
 .kpi-purple{ background: var(--purple-bg);color: var(--purple); }
 .kpi-orange{ background: var(--orange-bg);color: var(--orange); }
+.kpi-cyan  { background: var(--cyan-bg);  color: var(--cyan);   }
 
 .kpi-label {
   display: block;
@@ -751,6 +756,26 @@ textarea { resize: vertical; }
 
 .badge-produto { background: var(--blue-bg); color: var(--blue); }
 .badge-servico { background: var(--purple-bg); color: var(--purple); }
+
+.status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-left: 4px;
+}
+.badge-pago     { background: var(--green-bg); color: var(--green); }
+.badge-pendente { background: var(--orange-bg); color: var(--orange); }
+.badge-agendado { background: var(--purple-bg); color: var(--purple); }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
 
 .cat-card-name {
   font-weight: 700;
@@ -1371,3 +1396,147 @@ textarea { resize: vertical; }
   border-color: rgba(239,68,68,0.4);
 }
 
+/* =============================================
+   FILA DE PRODUÇÃO
+   ============================================= */
+.producao-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  padding: 10px;
+}
+
+.prod-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.prod-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--purple-neon);
+  box-shadow: 0 8px 30px rgba(191, 0, 255, 0.15);
+}
+
+.prod-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.prod-id {
+  font-family: var(--font-head);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  display: block;
+}
+
+.prod-cliente {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 2px 0;
+}
+
+.prod-tel {
+  font-size: 0.8rem;
+  color: var(--accent-hover);
+}
+
+.prod-status-tag {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.prod-items {
+  background: rgba(255,255,255,0.02);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.prod-item-row {
+  margin-bottom: 4px;
+}
+
+.prod-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.status-select {
+  flex: 1;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+}
+
+/* =============================================
+   CONTROLE DE PERDAS
+   ============================================= */
+.loss-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.loss-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.data-table th, .data-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table th {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.btn-outline.sm {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+}
+
+/* Purple Neon Focus */
+.nav-item.active {
+  color: var(--purple-neon);
+}
+.nav-item.active svg {
+  color: var(--purple-neon);
+  filter: drop-shadow(0 0 5px var(--purple-neon));
+}
+
+@media (max-width: 900px) {
+  .loss-grid { grid-template-columns: 1fr; }
+}
