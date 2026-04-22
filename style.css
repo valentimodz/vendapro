@@ -1540,3 +1540,34 @@ textarea { resize: vertical; }
 @media (max-width: 900px) {
   .loss-grid { grid-template-columns: 1fr; }
 }
+
+/* Botes de Toggle para Desconto */
+.desc-toggle-group {
+  display: flex;
+  background: var(--bg-card2);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  border: 1px solid var(--border);
+}
+
+.btn-toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all var(--transition);
+}
+
+.btn-toggle:hover {
+  color: var(--text-primary);
+}
+
+.btn-toggle.active {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 0 10px var(--accent-glow);
+}

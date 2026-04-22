@@ -428,9 +428,23 @@ function renderItensVenda() {
 
   const subtotal = vendaItens.reduce((s, i) => s + i.price * i.qty, 0);
   const descInput = document.getElementById('venda-desconto');
-  const desconto = parseFloat(descInput?.value) || 0;
+  const descTipo  = document.getElementById('venda-desconto-tipo').value;
+  const descVal   = parseFloat(descInput?.value) || 0;
+  
+  let desconto = descVal;
+  if (descTipo === 'perc') {
+    desconto = (subtotal * descVal) / 100;
+  }
+  
   const total = Math.max(0, subtotal - desconto);
   document.getElementById('venda-total-display').textContent = fmt(total);
+}
+
+function setDescType(type) {
+  document.getElementById('venda-desconto-tipo').value = type;
+  document.getElementById('btn-desc-real').classList.toggle('active', type === 'real');
+  document.getElementById('btn-desc-perc').classList.toggle('active', type === 'perc');
+  renderItensVenda();
 }
 
 document.getElementById('venda-desconto').addEventListener('input', () => renderItensVenda());
@@ -484,8 +498,21 @@ document.getElementById('form-venda').addEventListener('submit', async e => {
     telefone:     document.getElementById('venda-telefone').value.trim().replace(/\D/g,''),
     items:     vendaItens.map(i => ({ ...i })),
     subtotal:  vendaItens.reduce((s, i) => s + i.price * i.qty, 0),
-    desconto:  parseFloat(document.getElementById('venda-desconto').value) || 0,
-    total:     Math.max(0, vendaItens.reduce((s, i) => s + i.price * i.qty, 0) - (parseFloat(document.getElementById('venda-desconto').value) || 0)),
+    desconto_tipo: document.getElementById('venda-desconto-tipo').value,
+    desconto_valor: parseFloat(document.getElementById('venda-desconto').value) || 0,
+    desconto:  (function() {
+      const st = vendaItens.reduce((s, i) => s + i.price * i.qty, 0);
+      const dv = parseFloat(document.getElementById('venda-desconto').value) || 0;
+      const dt = document.getElementById('venda-desconto-tipo').value;
+      return dt === 'perc' ? (st * dv) / 100 : dv;
+    })(),
+    total:     (function() {
+      const st = vendaItens.reduce((s, i) => s + i.price * i.qty, 0);
+      const dv = parseFloat(document.getElementById('venda-desconto').value) || 0;
+      const dt = document.getElementById('venda-desconto-tipo').value;
+      const d  = dt === 'perc' ? (st * dv) / 100 : dv;
+      return Math.max(0, st - d);
+    })(),
     pagamento: document.getElementById('venda-pagamento').value,
     status_pagamento: statusPag,
     data_vencimento: statusPag === 'agendado' ? addDays(saleDate, 45) : null,
@@ -681,7 +708,7 @@ function renderHistoricoTable(month) {
       </td>
       <td style="font-weight:700;color:var(--green)">
         ${fmt(v.total)}
-        ${v.desconto > 0 ? `<br><small style="color:var(--accent);font-weight:600;font-size:0.75rem;">- ${fmt(v.desconto)} desc.</small>` : ''}
+        ${v.desconto > 0 ? `<br><small style="color:var(--accent);font-weight:600;font-size:0.75rem;">- ${v.desconto_tipo === 'perc' ? v.desconto_valor + '%' : fmt(v.desconto)} desc.</small>` : ''}
       </td>
       <td>
         <div style="display:flex;gap:4px;">
@@ -1258,7 +1285,8 @@ async function generateNote(id) {
       doc.text(fmt(v.subtotal || (v.total + v.desconto)), margin + 128, y, { align: 'right' });
       y += 6;
       doc.setTextColor(239, 68, 68);
-      doc.text('DESCONTO:', margin + 70, y);
+      const labelDesc = v.desconto_tipo === 'perc' ? `DESCONTO (${v.desconto_valor}%):` : 'DESCONTO:';
+      doc.text(labelDesc, margin + 70, y);
       doc.text(`- ${fmt(v.desconto)}`, margin + 128, y, { align: 'right' });
       doc.setTextColor(50, 50, 50);
       y += 6;
