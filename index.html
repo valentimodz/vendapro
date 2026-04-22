@@ -323,13 +323,14 @@
 
             <div class="form-group">
               <label for="venda-obs">Observações (opcional)</label>
-              <textarea id="venda-obs" rows="2" placeholder="Detalhes adicionais..."></textarea>
+              <textarea id="venda-obs" rows="2" placeholder="Informações extras da venda..."></textarea>
             </div>
 
-            <button type="submit" class="btn-accent btn-block" id="btn-salvar-venda">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              Salvar Venda
-            </button>
+            <input type="hidden" id="venda-editing-id" value="" />
+            <div style="display:flex; gap:10px;">
+              <button type="submit" class="btn-accent btn-block" id="btn-salvar-venda">Salvar Venda</button>
+              <button type="button" class="btn-outline" id="btn-cancelar-edicao" style="display:none; flex: 1;">Cancelar</button>
+            </div>
           </form>
         </div>
 

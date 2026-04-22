@@ -368,6 +368,9 @@ function refreshNovaVenda() {
   document.getElementById('venda-obs').value     = '';
   document.getElementById('item-search').value   = '';
   document.getElementById('venda-desconto').value = '';
+  document.getElementById('venda-editing-id').value = '';
+  document.getElementById('btn-cancelar-edicao').style.display = 'none';
+  document.getElementById('btn-salvar-venda').textContent = 'Salvar Venda';
   vendaItens = [];
   renderItensVenda();
   refreshResumoDia();
@@ -490,6 +493,7 @@ document.getElementById('form-venda').addEventListener('submit', async e => {
 
   const saleDate = document.getElementById('venda-data').value;
   const statusPag = document.getElementById('venda-status-pagamento').value;
+  const editingId = document.getElementById('venda-editing-id').value;
 
   const sale = {
     date:      saleDate,
@@ -517,13 +521,22 @@ document.getElementById('form-venda').addEventListener('submit', async e => {
     status_pagamento: statusPag,
     data_vencimento: statusPag === 'agendado' ? addDays(saleDate, 45) : null,
     obs:       document.getElementById('venda-obs').value.trim(),
-    createdAt: Date.now(),
+    updatedAt: Date.now(),
   };
 
+  if (!editingId) sale.createdAt = Date.now();
+
   try {
-    const ref = await salesRef().add(sale);
-    sales.unshift({ ...sale, id: ref.id });
-    toast(`✅ Venda de ${fmt(sale.total)} registrada!`);
+    if (editingId) {
+      await salesRef().doc(editingId).update(sale);
+      const idx = sales.findIndex(s => s.id === editingId);
+      if (idx !== -1) sales[idx] = { ...sales[idx], ...sale };
+      toast('✅ Venda atualizada!');
+    } else {
+      const ref = await salesRef().add(sale);
+      sales.unshift({ ...sale, id: ref.id });
+      toast(`✅ Venda de ${fmt(sale.total)} registrada!`);
+    }
     vendaItens = [];
     refreshNovaVenda();
   } catch (err) {
@@ -712,6 +725,9 @@ function renderHistoricoTable(month) {
       </td>
       <td>
         <div style="display:flex;gap:4px;">
+          <button class="btn-icon" onclick="editSale('${v.id}')" title="Editar Venda" style="color:var(--accent)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
           <button class="btn-icon" onclick="notificarCliente('${v.id}')" title="Notificar via WhatsApp" style="color:#25D366">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           </button>
@@ -1311,7 +1327,11 @@ async function generateNote(id) {
     const footerY = 200; // Final da folha A5 aprox
     doc.text('Obrigado pela preferência! Cyber Gráfika.', pageW/2, 200, { align: 'center' });
 
-    doc.save(`Nota_${v.id.slice(-6)}.pdf`);
+    const refNum = v.id.slice(-6).toUpperCase();
+    const cleanName = (v.nome_cliente || 'cliente').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const dateStr = v.date.split('-').reverse().join('-');
+    const filename = `nota de serviço #${refNum} ${cleanName} ${dateStr}.pdf`;
+    doc.save(filename);
     toast('✅ Nota de Serviço gerada!');
   } catch (err) {
     console.error(err); toast('Erro ao gerar nota.', 'error');
@@ -1340,3 +1360,38 @@ async function runMigration() {
     console.error(err); toast('Erro na migração.', 'error');
   }
 }
+
+function editSale(id) {
+  const sale = sales.find(s => s.id === id);
+  if (!sale) return;
+
+  goToPage('nova-venda');
+  document.getElementById('venda-editing-id').value = id;
+  document.getElementById('venda-data').value = sale.date;
+  document.getElementById('venda-cliente').value = sale.nome_cliente || '';
+  document.getElementById('venda-cliente-id').value = sale.clienteId || '';
+  document.getElementById('venda-telefone').value = sale.telefone || '';
+  document.getElementById('venda-pagamento').value = sale.pagamento;
+  document.getElementById('venda-status-pagamento').value = sale.status_pagamento || 'pago';
+  document.getElementById('venda-obs').value = sale.obs || '';
+  
+  if (sale.desconto_tipo) {
+    setDescType(sale.desconto_tipo);
+    document.getElementById('venda-desconto').value = sale.desconto_valor || 0;
+  } else {
+    setDescType('real');
+    document.getElementById('venda-desconto').value = sale.desconto || 0;
+  }
+
+  vendaItens = [...sale.items];
+  renderItensVenda();
+
+  document.getElementById('btn-cancelar-edicao').style.display = 'block';
+  document.getElementById('btn-salvar-venda').textContent = 'Atualizar Venda';
+  toast('Modo de edi��o ativado', 'info');
+}
+
+document.getElementById('btn-cancelar-edicao').addEventListener('click', () => {
+  refreshNovaVenda();
+  toast('Edi��o cancelada');
+});
