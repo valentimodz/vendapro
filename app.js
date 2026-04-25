@@ -1,5 +1,5 @@
 /* =============================================
-   GestÃƒÂ£o Cyber GrÃƒÂ¡fika Ã¢â‚¬â€œ app.js
+   Gestão Cyber Gráfika – app.js
    Firebase Auth + Firestore Edition
    ============================================= */
 
@@ -50,7 +50,7 @@ function fmt(n) {
 }
 
 function fmtDate(iso) {
-  if (!iso) return 'Ã¢â‚¬â€œ';
+  if (!iso) return '–';
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;
 }
@@ -60,7 +60,7 @@ function monthKey(iso) { return iso ? iso.slice(0, 7) : ''; }
 function monthLabel(key) {
   if (!key) return '';
   const [y, m] = key.split('-');
-  const names = ['Janeiro','Fevereiro','MarÃƒÂ§o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const names = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   return `${names[+m - 1]} ${y}`;
 }
 
@@ -124,9 +124,9 @@ document.getElementById('form-login').addEventListener('submit', async e => {
     // onAuthStateChanged will handle the rest
   } catch (err) {
     const msgs = {
-      'auth/user-not-found':   'UsuÃƒÂ¡rio nÃƒÂ£o encontrado.',
+      'auth/user-not-found':   'Usuário não encontrado.',
       'auth/wrong-password':   'Senha incorreta. Tente novamente.',
-      'auth/invalid-email':    'E-mail invÃƒÂ¡lido.',
+      'auth/invalid-email':    'E-mail inválido.',
       'auth/too-many-requests':'Muitas tentativas. Aguarde alguns minutos.',
       'auth/invalid-credential': 'E-mail ou senha incorretos.',
     };
@@ -157,7 +157,7 @@ auth.onAuthStateChanged(async user => {
       goToPage('dashboard');
     } catch (err) {
       console.error('Erro ao carregar dados:', err);
-      toast('Erro ao carregar dados. Verifique a conexÃƒÂ£o.', 'error');
+      toast('Erro ao carregar dados. Verifique a conexão.', 'error');
       hideLoading();
     }
   } else {
@@ -215,9 +215,9 @@ function goToPage(name) {
   const titles = {
     'dashboard':  'Dashboard',
     'nova-venda': 'Nova Venda',
-    'catalogo':   'CatÃƒÂ¡logo',
-    'historico':  'HistÃƒÂ³rico de Vendas',
-    'relatorio':  'RelatÃƒÂ³rio PDF',
+    'catalogo':   'Catálogo',
+    'historico':  'Histórico de Vendas',
+    'relatorio':  'Relatório PDF',
     'perdas':     'Controle de Perdas'
   };
   document.getElementById('topbar-title').textContent = titles[name] || name;
@@ -249,12 +249,12 @@ function renderDashKPIs(month) {
   const itens  = list.reduce((s, v) => s + v.items.reduce((a, i) => a + i.qty, 0), 0);
   const ticket = list.length ? fat / list.length : 0;
   
-  // Lucro LÃƒÂ­quido Real = Faturamento - Custos - Perdas
+  // Lucro Líquido Real = Faturamento - Custos - Perdas
   const totalCusto = list.reduce((s, v) => {
     return s + v.items.reduce((acc, i) => acc + ( (i.cost || 0) * i.qty), 0);
   }, 0);
   
-  // SomatÃƒÂ³rio Mensal de Perdas
+  // Somatório Mensal de Perdas
   const perdasMes = wasteLogs
     .filter(w => monthKey(w.date) === month)
     .reduce((s, w) => s + w.custo, 0);
@@ -308,7 +308,7 @@ function renderChartTop5(month) {
   const map  = {};
   list.forEach(v => { v.items.forEach(i => { map[i.name] = (map[i.name] || 0) + i.qty; }); });
   const sorted = Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  const labels = sorted.map(([n]) => n.length > 18 ? n.slice(0, 16) + 'Ã¢â‚¬Â¦' : n);
+  const labels = sorted.map(([n]) => n.length > 18 ? n.slice(0, 16) + '…' : n);
   const data   = sorted.map(([, q]) => q);
 
   const ctx = document.getElementById('chart-top5').getContext('2d');
@@ -345,7 +345,7 @@ function renderRecentSales() {
     return `<div class="sale-item">
       <div class="sale-item-left">
         <span class="sale-item-date">${fmtDate(v.date)}</span>
-        <span class="sale-item-desc">${itensStr.length > 55 ? itensStr.slice(0, 53) + 'Ã¢â‚¬Â¦' : itensStr}</span>
+        <span class="sale-item-desc">${itensStr.length > 55 ? itensStr.slice(0, 53) + '…' : itensStr}</span>
         ${v.cliente ? `<span class="sale-item-cliente">Ã°Å¸Â§â€˜ ${v.cliente}</span>` : ''}
       </div>
       <span class="sale-item-value">${fmt(v.total)}</span>
@@ -387,7 +387,7 @@ function refreshResumoDia() {
 
 function renderAtalhos() {
   const box = document.getElementById('atalho-cats');
-  if (!catalog.length) { box.innerHTML = '<span style="font-size:0.78rem;color:var(--text-muted)">Adicione itens no CatÃƒÂ¡logo</span>'; return; }
+  if (!catalog.length) { box.innerHTML = '<span style="font-size:0.78rem;color:var(--text-muted)">Adicione itens no Catálogo</span>'; return; }
   box.innerHTML = catalog.slice(0, 10).map(c =>
     `<button class="atalho-btn" onclick="addItemToVenda('${c.id}')">${c.name}</button>`
   ).join('');
@@ -558,7 +558,7 @@ function renderSuggestions(q) {
     <div class="suggestion-item" data-id="${c.id}">
       <div class="sug-left">
         <span class="sug-name">${c.name}</span>
-        <span class="sug-type">${c.type === 'produto' ? 'Ã°Å¸â€œÂ¦ Produto' : 'Ã°Å¸â€Â§ ServiÃƒÂ§o'} Ã‚Â· ${c.unit}</span>
+        <span class="sug-type">${c.type === 'produto' ? 'Ã°Å¸â€œÂ¦ Produto' : 'Ã°Å¸â€Â§ Serviço'} · ${c.unit}</span>
       </div>
       <span class="sug-price">${fmt(c.price)}</span>
     </div>
@@ -618,17 +618,17 @@ document.getElementById('form-venda').addEventListener('submit', async e => {
       await salesRef().doc(editingId).update(sale);
       const idx = sales.findIndex(s => s.id === editingId);
       if (idx !== -1) sales[idx] = { ...sales[idx], ...sale };
-      toast('Ã¢Å“â€¦ Venda atualizada!');
+      toast('✅ Venda atualizada!');
     } else {
       const ref = await salesRef().add(sale);
       sales.unshift({ ...sale, id: ref.id });
-      toast(`Ã¢Å“â€¦ Venda de ${fmt(sale.total)} registrada!`);
+      toast(`✅ Venda de ${fmt(sale.total)} registrada!`);
     }
     vendaItens = [];
     refreshNovaVenda();
   } catch (err) {
     console.error(err);
-    toast('Erro ao salvar venda. Verifique a conexÃƒÂ£o.', 'error');
+    toast('Erro ao salvar venda. Verifique a conexão.', 'error');
   }
   btn.disabled = false;
 });
@@ -643,7 +643,7 @@ function renderCatalogo() {
   if (!items.length) {
     grid.innerHTML = `<div class="empty-state full-width">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-      <p>${catalog.length ? 'Nenhum resultado para este filtro.' : 'CatÃƒÂ¡logo vazio. Adicione produtos e serviÃƒÂ§os.'}</p>
+      <p>${catalog.length ? 'Nenhum resultado para este filtro.' : 'Catálogo vazio. Adicione produtos e serviços.'}</p>
     </div>`;
     return;
   }
@@ -651,7 +651,7 @@ function renderCatalogo() {
   grid.innerHTML = items.map(c => `
     <div class="cat-card">
       <div class="cat-card-head">
-        <span class="cat-badge badge-${c.type}">${c.type === 'produto' ? 'Produto' : 'ServiÃƒÂ§o'}</span>
+        <span class="cat-badge badge-${c.type}">${c.type === 'produto' ? 'Produto' : 'Serviço'}</span>
         <div class="cat-card-actions">
           <button class="btn-icon" onclick="editCat('${c.id}')" title="Editar">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -714,12 +714,12 @@ function openModalCat(id = null) {
 function editCat(id) { openModalCat(id); }
 
 async function deleteCat(id) {
-  if (!confirm('Excluir este item do catÃƒÂ¡logo?')) return;
+  if (!confirm('Excluir este item do catálogo?')) return;
   try {
     await catalogRef().doc(id).delete();
     catalog = catalog.filter(c => c.id !== id);
     renderCatalogo();
-    toast('Item excluÃƒÂ­do.', 'error');
+    toast('Item excluído.', 'error');
   } catch (err) {
     toast('Erro ao excluir. Tente novamente.', 'error');
   }
@@ -756,7 +756,7 @@ document.getElementById('form-catalogo').addEventListener('submit', async e => {
       catalog.push({ id: ref.id, ...item });
       // re-sort by name
       catalog.sort((a, b) => a.name.localeCompare(b.name));
-      toast('Item adicionado ao catÃƒÂ¡logo!');
+      toast('Item adicionado ao catálogo!');
     }
     closeModalCat();
     renderCatalogo();
@@ -779,7 +779,7 @@ function refreshHistorico() {
   renderHistoricoTable(sel.value || months[0]);
 }
 
-const pagLabels = { dinheiro:'Dinheiro', pix:'PIX', debito:'DÃƒÂ©bito', credito:'CrÃƒÂ©dito', outro:'Outro' };
+const pagLabels = { dinheiro:'Dinheiro', pix:'PIX', debito:'Débito', credito:'Crédito', outro:'Outro' };
 const statusLabels = { pago:'Pago', pendente:'Pendente', agendado:'Agendado' };
 
 function renderHistoricoTable(month) {
@@ -797,7 +797,7 @@ function renderHistoricoTable(month) {
     <tr>
       <td>${fmtDate(v.date)}</td>
       <td>
-        <div style="font-weight:600">${v.nome_cliente || 'Ã¢â‚¬â€œ'}</div>
+        <div style="font-weight:600">${v.nome_cliente || '–'}</div>
         <small style="color:var(--text-muted)">${v.telefone || ''}</small>
       </td>
       <td>${v.items.map(i => `<span class="tag-item">${i.name} Ãƒâ€”${i.qty}</span>`).join(' ')}</td>
@@ -832,12 +832,12 @@ function renderHistoricoTable(month) {
 }
 
 async function deleteSale(id) {
-  if (!confirm('Excluir esta venda do histÃƒÂ³rico?')) return;
+  if (!confirm('Excluir esta venda do histórico?')) return;
   try {
     await salesRef().doc(id).delete();
     sales = sales.filter(s => s.id !== id);
     refreshHistorico();
-    toast('Venda excluÃƒÂ­da.', 'error');
+    toast('Venda excluída.', 'error');
   } catch (err) {
     toast('Erro ao excluir. Tente novamente.', 'error');
   }
@@ -852,7 +852,7 @@ function refreshRelatorio() {
 
 document.getElementById('btn-preview-rel').addEventListener('click', () => {
   const month   = document.getElementById('rel-month-select').value;
-  const empresa = document.getElementById('rel-empresa').value.trim() || 'GestÃƒÂ£o Cyber GrÃƒÂ¡fika';
+  const empresa = document.getElementById('rel-empresa').value.trim() || 'Gestão Cyber Gráfika';
   document.getElementById('preview-body').innerHTML = buildReportHTML(month, empresa);
   document.getElementById('relatorio-preview').style.display = 'block';
   document.getElementById('relatorio-preview').scrollIntoView({ behavior: 'smooth' });
@@ -864,7 +864,7 @@ document.getElementById('btn-close-preview').addEventListener('click', () => {
 
 document.getElementById('btn-gerar-pdf').addEventListener('click', async () => {
   const month   = document.getElementById('rel-month-select').value;
-  const empresa = document.getElementById('rel-empresa').value.trim() || 'GestÃƒÂ£o Cyber GrÃƒÂ¡fika';
+  const empresa = document.getElementById('rel-empresa').value.trim() || 'Gestão Cyber Gráfika';
   await generatePDF(month, empresa);
 });
 
@@ -901,14 +901,14 @@ function buildReportHTML(month, empresa) {
     return `<div class="prev-bar-row">
       <span class="prev-bar-label" title="${item.name}">${item.name}</span>
       <div class="prev-bar-track"><div class="prev-bar-fill" style="width:${pct}%"></div></div>
-      <span class="prev-bar-val">${item.qty}x Ã‚Â· ${fmt(item.revenue)}</span>
+      <span class="prev-bar-val">${item.qty}x · ${fmt(item.revenue)}</span>
     </div>`;
   }).join('');
 
   const salesRows = d.list.slice(0, 30).map(v => `
     <tr>
       <td>${fmtDate(v.date)}</td>
-      <td>${v.cliente || 'Ã¢â‚¬â€œ'}</td>
+      <td>${v.cliente || '–'}</td>
       <td>${v.items.map(i => `${i.name} (${i.qty}x)`).join(', ')}</td>
       <td>${pagLabels[v.pagamento] || v.pagamento}</td>
       <td style="font-weight:700;color:#4f46e5">${fmt(v.total)}</td>
@@ -921,9 +921,9 @@ function buildReportHTML(month, empresa) {
 
   return `<div class="prev-page">
     <div class="prev-head">
-      <div class="prev-logo-area"><h1>Ã°Å¸â€œÅ  RelatÃƒÂ³rio Mensal</h1><p>${empresa}</p></div>
+      <div class="prev-logo-area"><h1>Ã°Å¸â€œÅ  Relatório Mensal</h1><p>${empresa}</p></div>
       <div class="prev-meta">
-        <strong>PerÃƒÂ­odo:</strong> ${monthLabel(month)}<br>
+        <strong>Período:</strong> ${monthLabel(month)}<br>
         <strong>Gerado em:</strong> ${dateStr}<br>
         <strong>Total de vendas:</strong> ${d.list.length}
       </div>
@@ -932,7 +932,7 @@ function buildReportHTML(month, empresa) {
       <div class="prev-section-title">Resumo Financeiro</div>
       <div class="prev-kpi-row">
         <div class="prev-kpi"><p>Faturamento Total</p><h2>${fmt(d.fat)}</h2></div>
-        <div class="prev-kpi"><p>Ticket MÃƒÂ©dio</p><h2>${fmt(d.ticket)}</h2></div>
+        <div class="prev-kpi"><p>Ticket Médio</p><h2>${fmt(d.ticket)}</h2></div>
         <div class="prev-kpi"><p>Itens Vendidos</p><h2>${d.itensCount}</h2></div>
       </div>
       ${d.bestDay ? `<p style="margin-top:12px;font-size:0.8rem;color:#64748b">Ã°Å¸â€œâ€¦ <strong>Melhor dia:</strong> ${fmtDate(d.bestDay[0])} com ${fmt(d.bestDay[1])}</p>` : ''}
@@ -943,16 +943,16 @@ function buildReportHTML(month, empresa) {
     </div>
     <div class="prev-section">
       <div class="prev-section-title">Formas de Pagamento</div>
-      <table class="prev-table"><thead><tr><th>MÃƒÂ©todo</th><th>Total</th></tr></thead>
+      <table class="prev-table"><thead><tr><th>Método</th><th>Total</th></tr></thead>
       <tbody>${pagRows || '<tr><td colspan="2" style="color:#94a3b8">Sem dados.</td></tr>'}</tbody></table>
     </div>
     <div class="prev-section">
-      <div class="prev-section-title">HistÃƒÂ³rico (${Math.min(d.list.length,30)} registros)</div>
+      <div class="prev-section-title">Histórico (${Math.min(d.list.length,30)} registros)</div>
       <table class="prev-table"><thead><tr><th>Data</th><th>Cliente</th><th>Itens</th><th>Pagto</th><th>Total</th></tr></thead>
       <tbody>${salesRows || '<tr><td colspan="5" style="color:#94a3b8">Sem vendas.</td></tr>'}</tbody></table>
     </div>
     <div class="prev-footer">
-      <span>GestÃƒÂ£o Cyber GrÃƒÂ¡fika Ã‚Â· Sistema de GestÃƒÂ£o de Vendas</span>
+      <span>Gestão Cyber Gráfika · Sistema de Gestão de Vendas</span>
       <span>Gerado em ${dateStr}</span>
     </div>
   </div>`;
@@ -985,17 +985,17 @@ async function generatePDF(month, empresa) {
     // Header
     doc.setFillColor(79,70,229); doc.rect(0,0,pageW,40,'F');
     doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(20);
-    doc.text('RelatÃƒÂ³rio Mensal', margin, 16);
+    doc.text('Relatório Mensal', margin, 16);
     doc.setFont('helvetica','normal'); doc.setFontSize(11);
     doc.text(empresa, margin, 25);
-    doc.text(`PerÃƒÂ­odo: ${monthLabel(month)}`, margin, 33);
+    doc.text(`Período: ${monthLabel(month)}`, margin, 33);
     doc.setFontSize(9);
     doc.text(`Gerado em: ${dateStr}`, pageW - margin, 25, { align:'right' });
     doc.text(`Total de vendas: ${d.list.length}`, pageW - margin, 33, { align:'right' });
     y = 52;
 
     // KPIs
-    const kpis = [{ label:'Faturamento Total', value: fmt(d.fat) }, { label:'Ticket MÃƒÂ©dio', value: fmt(d.ticket) }, { label:'Itens Vendidos', value:`${d.itensCount}` }];
+    const kpis = [{ label:'Faturamento Total', value: fmt(d.fat) }, { label:'Ticket Médio', value: fmt(d.ticket) }, { label:'Itens Vendidos', value:`${d.itensCount}` }];
     const boxW = contentW / 3 - 3;
     kpis.forEach((kpi, i) => {
       const bx = margin + i * (boxW + 4.5);
@@ -1014,17 +1014,17 @@ async function generatePDF(month, empresa) {
     }
 
     // Top items
-    sectionTitle('Produtos / ServiÃƒÂ§os Mais Vendidos');
+    sectionTitle('Produtos / Serviços Mais Vendidos');
     const maxQty = d.topItems[0]?.qty || 1;
     d.topItems.slice(0, 12).forEach(item => {
       checkY(10);
       const pct = item.qty / maxQty, nameW = 55, barX = margin + nameW + 4, barW = contentW - nameW - 50;
       doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(50,65,80);
-      doc.text(item.name.length > 28 ? item.name.slice(0,26)+'Ã¢â‚¬Â¦' : item.name, margin, y + 4.5);
+      doc.text(item.name.length > 28 ? item.name.slice(0,26)+'…' : item.name, margin, y + 4.5);
       doc.setFillColor(226,232,240); doc.roundedRect(barX, y+1, barW, 5, 1,1,'F');
       if (pct > 0) { doc.setFillColor(...accentRGB); doc.roundedRect(barX, y+1, barW*pct, 5,1,1,'F'); }
       doc.setFontSize(7.5); doc.setTextColor(100,116,139);
-      doc.text(`${item.qty}x Ã‚Â· ${fmt(item.revenue)}`, barX + barW + 3, y + 4.5);
+      doc.text(`${item.qty}x · ${fmt(item.revenue)}`, barX + barW + 3, y + 4.5);
       y += 9;
     });
     y += 4;
@@ -1046,7 +1046,7 @@ async function generatePDF(month, empresa) {
     y += 4;
 
     // Sales table
-    sectionTitle(`HistÃƒÂ³rico de Vendas (${d.list.length} registros)`);
+    sectionTitle(`Histórico de Vendas (${d.list.length} registros)`);
     const headers = ['Data','Cliente','Itens','Pagto','Total'];
     const colWidths = [22, 28, contentW - 22 - 28 - 20 - 28, 20, 28];
     const rowH = 7.5;
@@ -1065,8 +1065,8 @@ async function generatePDF(month, empresa) {
       const itensStr = v.items.map(i => `${i.name}(${i.qty}x)`).join(', ');
       const cols = [
         fmtDate(v.date),
-        v.cliente ? (v.cliente.length > 14 ? v.cliente.slice(0,12)+'Ã¢â‚¬Â¦' : v.cliente) : 'Ã¢â‚¬â€œ',
-        itensStr.length > 40 ? itensStr.slice(0,38)+'Ã¢â‚¬Â¦' : itensStr,
+        v.cliente ? (v.cliente.length > 14 ? v.cliente.slice(0,12)+'…' : v.cliente) : '–',
+        itensStr.length > 40 ? itensStr.slice(0,38)+'…' : itensStr,
         pagLabels[v.pagamento]||v.pagamento,
         fmt(v.total),
       ];
@@ -1086,12 +1086,12 @@ async function generatePDF(month, empresa) {
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       doc.setFontSize(7.5); doc.setTextColor(148,163,184); doc.setFont('helvetica','normal');
-      doc.text('GestÃƒÂ£o Cyber GrÃƒÂ¡fika Ã‚Â· Sistema de GestÃƒÂ£o de Vendas', margin, 290);
-      doc.text(`PÃƒÂ¡gina ${i}/${pageCount}`, pageW - margin, 290, { align:'right' });
+      doc.text('Gestão Cyber Gráfika · Sistema de Gestão de Vendas', margin, 290);
+      doc.text(`Página ${i}/${pageCount}`, pageW - margin, 290, { align:'right' });
     }
 
     doc.save(`Relatorio_${monthLabel(month).replace(' ','_')}.pdf`);
-    toast('Ã¢Å“â€¦ PDF gerado e baixado com sucesso!');
+    toast('✅ PDF gerado e baixado com sucesso!');
   } catch (err) {
     console.error(err); toast('Erro ao gerar PDF.', 'error');
   }
@@ -1111,7 +1111,7 @@ document.getElementById('menu-toggle').addEventListener('click', () => {
 
 function setCurrentMonthLabel() {
   const now   = new Date();
-  const names = ['Janeiro','Fevereiro','MarÃƒÂ§o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const names = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   document.getElementById('current-month-label').textContent = `${names[now.getMonth()]} ${now.getFullYear()}`;
 }
 
@@ -1143,7 +1143,7 @@ function renderClientSuggestions(q) {
     <div class="suggestion-item" data-id="${c.id}">
       <div class="sug-left">
         <span class="sug-name">${c.name}</span>
-        <span class="sug-type">${c.type === 'PF' ? 'PF' : 'PJ'} ${c.doc ? 'Ã‚Â· ' + c.doc : ''}</span>
+        <span class="sug-type">${c.type === 'PF' ? 'PF' : 'PJ'} ${c.doc ? '· ' + c.doc : ''}</span>
       </div>
       <span class="sug-price" style="font-size:0.8rem; color:var(--text-muted);">${c.phone || ''}</span>
     </div>
@@ -1230,7 +1230,7 @@ function notificarCliente(id) {
   if (!v) return;
   
   const items = v.items.map(i => `${i.qty}x ${i.name}`).join(', ');
-  const msg = `OlÃƒÂ¡ ${v.nome_cliente}, seu pedido da Cyber GrÃƒÂ¡fika (${items}) jÃƒÂ¡ estÃƒÂ¡ pronto para retirada! Ã°Å¸Å¡â‚¬`;
+  const msg = `Olá ${v.nome_cliente}, seu pedido da Cyber Gráfika (${items}) já está pronto para retirada! 🚀`;
   const url = `https://api.whatsapp.com/send?phone=55${v.telefone}&text=${encodeURIComponent(msg)}`;
   
   window.open(url, '_blank');
@@ -1295,7 +1295,7 @@ function renderLossHistory() {
             <td style="font-weight:600">${w.insumo}</td>
             <td>${w.quantidade}</td>
             <td style="color:#ef4444">${fmt(w.custo)}</td>
-            <td class="text-muted"><small>${w.motivo || 'Ã¢â‚¬â€œ'}</small></td>
+            <td class="text-muted"><small>${w.motivo || '–'}</small></td>
           </tr>
         `).join('')}
       </tbody>
@@ -1305,14 +1305,14 @@ function renderLossHistory() {
 window.generateNote = generateNote;
 window.runMigration = runMigration;
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ NOTA DE SERVIÃƒâ€¡O Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// Ã¢â€â‚¬Ã¢â€â‚¬ NOTA DE SERVIÇO Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 async function generateNote(id) {
   const v = sales.find(s => s.id === id);
-  if (!v) { toast('Venda nÃƒÂ£o encontrada.', 'error'); return; }
+  if (!v) { toast('Venda não encontrada.', 'error'); return; }
 
   try {
     const { jsPDF } = window.jspdf;
-    // Formato 80mm (tÃƒÂ©rmico) ou A5? Vamos de A5 para uma "Nota" mais legÃƒÂ­vel
+    // Formato 80mm (térmico) ou A5? Vamos de A5 para uma "Nota" mais legível
     const doc = new jsPDF({ unit: 'mm', format: 'a5' }); 
     const pageW = 148, margin = 10, contentW = pageW - margin*2;
     let y = 15;
@@ -1322,9 +1322,9 @@ async function generateNote(id) {
     doc.setDrawColor(99, 102, 241); doc.setLineWidth(0.5); doc.line(0, 25, pageW, 25);
     
     doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
-    doc.text('NOTA DE SERVIÃƒâ€¡O', margin, 12);
+    doc.text('NOTA DE SERVIÇO', margin, 12);
     doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-    doc.text('CYBER GRÃƒÂFIKA - SOLUÃƒâ€¡Ãƒâ€¢ES DIGITAIS', margin, 18);
+    doc.text('CYBER GRÃƒÂFIKA - SOLUÇÃƒâ€¢ES DIGITAIS', margin, 18);
     doc.text(`#${v.id.slice(-6).toUpperCase()}`, pageW - margin, 15, { align: 'right' });
     
     // Logo Centralizada
@@ -1370,7 +1370,7 @@ async function generateNote(id) {
     // Items List
     doc.setFont('helvetica', 'normal');
     v.items.forEach(i => {
-      doc.text(i.name.length > 35 ? i.name.slice(0,33)+'Ã¢â‚¬Â¦' : i.name, margin + 2, y);
+      doc.text(i.name.length > 35 ? i.name.slice(0,33)+'…' : i.name, margin + 2, y);
       doc.text(`${i.qty}`, margin + 70, y, { align: 'center' });
       doc.text(fmt(i.price), margin + 95, y, { align: 'right' });
       doc.text(fmt(i.price * i.qty), margin + 128, y, { align: 'right' });
@@ -1404,7 +1404,7 @@ async function generateNote(id) {
     if (v.obs) {
       y += 12;
       doc.setTextColor(100, 100, 100); doc.setFontSize(7); doc.setFont('helvetica', 'italic');
-      doc.text('OBSERVAÃƒâ€¡Ãƒâ€¢ES:', margin, y);
+      doc.text('OBSERVAÇÃƒâ€¢ES:', margin, y);
       const lines = doc.splitTextToSize(v.obs, contentW);
       doc.text(lines, margin, y + 4);
     }
@@ -1412,14 +1412,14 @@ async function generateNote(id) {
     // Footer
     doc.setTextColor(150, 150, 150); doc.setFontSize(7); doc.setFont('helvetica', 'normal');
     const footerY = 200; // Final da folha A5 aprox
-    doc.text('Obrigado pela preferÃƒÂªncia! Cyber GrÃƒÂ¡fika.', pageW/2, 200, { align: 'center' });
+    doc.text('Obrigado pela preferência! Cyber Gráfika.', pageW/2, 200, { align: 'center' });
 
     const refNum = v.id.slice(-6).toUpperCase();
     const cleanName = (v.nome_cliente || 'cliente').replace(/[^a-z0-9]/gi, '_').toLowerCase();
     const dateStr = v.date.split('-').reverse().join('-');
-    const filename = `nota de serviÃƒÂ§o #${refNum} ${cleanName} ${dateStr}.pdf`;
+    const filename = `nota de serviço #${refNum} ${cleanName} ${dateStr}.pdf`;
     doc.save(filename);
-    toast('Ã¢Å“â€¦ Nota de ServiÃƒÂ§o gerada!');
+    toast('✅ Nota de Serviço gerada!');
   } catch (err) {
     console.error(err); toast('Erro ao gerar nota.', 'error');
   }
@@ -1441,10 +1441,10 @@ async function runMigration() {
         await doc.ref.update({ status_pagamento: 'pago' });
       }
     }
-    toast('Ã¢Å“â€¦ MigraÃƒÂ§ÃƒÂ£o finalizada!', 'success');
+    toast('✅ Migração finalizada!', 'success');
     loadAllData(); // reload
   } catch (err) {
-    console.error(err); toast('Erro na migraÃƒÂ§ÃƒÂ£o.', 'error');
+    console.error(err); toast('Erro na migração.', 'error');
   }
 }
 
@@ -1475,11 +1475,11 @@ function editSale(id) {
 
   document.getElementById('btn-cancelar-edicao').style.display = 'block';
   document.getElementById('btn-salvar-venda').textContent = 'Atualizar Venda';
-  toast('Modo de ediÃ§Ã£o ativado', 'info');
+  toast('Modo de edição ativado', 'info');
 }
 
 document.getElementById('btn-cancelar-edicao').addEventListener('click', () => {
   refreshNovaVenda();
-  toast('EdiÃ§Ã£o cancelada');
+  toast('Edição cancelada');
 });
 
