@@ -488,6 +488,12 @@ function renderItensVenda() {
     box.querySelectorAll(".qty-input").forEach(function(inp){
       inp.addEventListener("input", function(e){
         const i = +e.target.dataset.idx;
+        vendaItens[i].qty = +e.target.value || 0;
+        // Não renderiza tudo agora para não perder o foco
+        updateTotalsOnly();
+      });
+      inp.addEventListener("change", function(e){
+        const i = +e.target.dataset.idx;
         vendaItens[i].qty = Math.max(1, +e.target.value || 1);
         renderItensVenda();
       });
@@ -496,10 +502,13 @@ function renderItensVenda() {
       inp.addEventListener("input", function(e){
         const i = +e.target.dataset.idx;
         vendaItens[i].manualDiscount = e.target.value;
+        updateTotalsOnly();
+      });
+      inp.addEventListener("change", function(e){
         renderItensVenda();
       });
     });
-    const subtotal = vendaItens.reduce(function(s, i){ return s + i.price * i.qty }, 0);
+    const subtotal = vendaItens.reduce(function(s, i){ return s + i.price * (i.qty || 0) }, 0);
     const descInput = document.getElementById("venda-desconto");
     const descTipo  = document.getElementById("venda-desconto-tipo").value;
     const descVal   = parseFloat(descInput ? descInput.value : 0) || 0;
@@ -509,6 +518,17 @@ function renderItensVenda() {
     document.getElementById("venda-total-display").textContent = fmt(total);
   } catch (err) { console.error("Error in renderItensVenda:", err); }
 }
+
+function updateTotalsOnly() {
+  const subtotal = vendaItens.reduce((s, i) => s + (i.price * (i.qty || 0)), 0);
+  const descVal = parseFloat(document.getElementById("venda-desconto").value) || 0;
+  const descTipo = document.getElementById("venda-desconto-tipo").value;
+  let desconto = descVal;
+  if (descTipo === "perc") { desconto = (subtotal * descVal) / 100; }
+  const total = Math.max(0, subtotal - desconto);
+  document.getElementById("venda-total-display").textContent = fmt(total);
+}
+
 function setDescType(type) {
   document.getElementById('venda-desconto-tipo').value = type;
   document.getElementById('btn-desc-real').classList.toggle('active', type === 'real');
@@ -516,7 +536,8 @@ function setDescType(type) {
   renderItensVenda();
 }
 
-document.getElementById('venda-desconto').addEventListener('input', () => renderItensVenda());
+document.getElementById('venda-desconto').addEventListener('input', () => updateTotalsOnly());
+document.getElementById('venda-desconto').addEventListener('change', () => renderItensVenda());
 
 function removeItemVenda(idx) { vendaItens.splice(idx, 1); renderItensVenda(); }
 
