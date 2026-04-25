@@ -594,7 +594,7 @@ textarea { resize: vertical; }
 
 .item-venda-row {
   display: grid;
-  grid-template-columns: 1fr 80px 100px 36px;
+  grid-template-columns: 1fr 110px 70px 90px 36px;
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
@@ -603,8 +603,37 @@ textarea { resize: vertical; }
 
 .item-venda-row:last-child { border-bottom: none; }
 
-.ivr-name { font-size: 0.875rem; font-weight: 500; }
-.ivr-name span { display: block; font-size: 0.72rem; color: var(--text-muted); }
+.ivr-discount { text-align: center; display: flex; justify-content: center; }
+.ivr-discount span { 
+  background: rgba(79, 70, 229, 0.1); 
+  color: #4f46e5; 
+  padding: 2px 8px; 
+  border-radius: 20px; 
+  font-size: 0.7rem; 
+  font-weight: 700;
+  white-space: nowrap;
+}
+.ivr-discount input {
+  width: 60px;
+  padding: 4px 6px;
+  font-size: 0.75rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+.ivr-discount input:focus { border-color: var(--accent); outline: none; }
+
+.volume-status {
+  padding: 10px 15px;
+  background: rgba(79, 70, 229, 0.05);
+  border-top: 1px dashed var(--border);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+.volume-status strong { color: var(--accent); }
+.volume-status div { margin-bottom: 2px; }
 
 .ivr-qty input {
   text-align: center;

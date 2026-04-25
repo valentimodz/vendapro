@@ -1,0 +1,2 @@
+- [x] Revert printing services to fully automatic with visual badges
+- [x] Add manual discount field (%) for other services in the item list
